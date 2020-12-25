@@ -1,6 +1,6 @@
 
 
-host = '192.168.1.96'
+host = '25.45.173.121'
 port = 5005
 ip_start = host[:host.rfind('.')+1]
 

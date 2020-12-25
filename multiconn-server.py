@@ -19,8 +19,12 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    BrightRed= '\u001b[31;1m'
+    BackgroundBrightMagenta= '\u001b[45;1m'
+    BackgroundBrightCyan= '\u001b[46;1m'
+    RESET= '\u001b[0m'
 
-logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-10s) %(message)s',
                     )
 
@@ -29,7 +33,7 @@ sel = selectors.DefaultSelector()
 lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 lsock.bind((host, port))
 lsock.listen()
-print('Server started, listening on IP address ', host)
+print(bcolors.BackgroundBrightMagenta+bcolors.BOLD+'Server started, listening on IP address ', host, bcolors.RESET)
 lsock.setblocking(False)
 sel.register(lsock, selectors.EVENT_READ, data=None)
 
@@ -53,10 +57,10 @@ def client_to_team(key, mask):
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(1024).decode("utf-8")  # Should be ready to read
         if recv_data:
-            if(len(team_map.get('group 1'))< len(team_map.get('group 1'))):
+            if(len(team_map.get('group 1'))< len(team_map.get('group 2'))):
                 team_map['group 1'].append((recv_data,key,mask))
                 group1_ips.append(data.addr[0])
-            elif (len(team_map.get('group 1'))>len(team_map.get('group 1'))):
+            elif (len(team_map.get('group 2'))>len(team_map.get('group 1'))):
                 team_map['group 2'].append((recv_data,key,mask))
                 group2_ips.append(data.addr[0])
             else:
@@ -68,7 +72,7 @@ def client_to_team(key, mask):
                 else:
                     group2_ips.append(data.addr[0])
         else:
-            print('closing connection to', data.addr)
+            print(bcolors.BOLD+'closing connection to', data.addr)
             sel.unregister(sock)
             sock.close()
 
@@ -131,10 +135,7 @@ def send_udp_invaite():
             # sock.bind((ip,0))
             sock.sendto(msg, (ip, port))
             sock.close()
-    logging.debug("end send invaite")
-
-
-
+    logging.debug("end send invite")
 
 
 def main():
@@ -173,8 +174,8 @@ def main():
             else:
                 service_connection(key, mask)
 
-    print('group1: ',couter_group1)
-    print('group2: ', couter_group2)
+    print(bcolors.BrightRed+'group1: ',couter_group1)
+    print(bcolors.BrightRed+'group2: ', couter_group2)
 
     print("endddd")
 

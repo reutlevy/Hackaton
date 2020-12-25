@@ -42,11 +42,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((host, port))
     s.sendall(b'reut\n')
     data = s.recv(1024)
-    print(data.decode("utf-8"))
+    print(bcolors.BOLD+bcolors.OKBLUE+data.decode("utf-8"))
     t_end = time.time() + 10
     with Listener(
             on_press=on_press) as listener:
         listener.join()
 
-    print('Received', repr(data))
-    print("end")
+    print(bcolors.OKCYAN+'Received', repr(data))
+    print(bcolors.UNDERLINE+bcolors.OKGREEN+"end")
