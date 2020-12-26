@@ -11,12 +11,27 @@ ip_range_list = ['{}{}'.format(ip_start, x) for x in range(0, 256)]
 
 ip_range_list.append('25.45.173.121')
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    RED = '\u001b[31m'
+    Magenta = '\u001b[35'
+    Yellow = '\u001b[33'
+    purple = '\033[35m'
+    RESET ='\u001b[0m'
 
 @dataclasses.dataclass
 class Msg:
-    Magic_cookie: int
-    Message_type: int
-    Server_port: int
+    Magic_cookie: bytes
+    Message_type: bytes
+    Server_port: bytes
 
     def get_port_as_bytes(self):
         return self.Server_port
@@ -28,8 +43,7 @@ class Msg:
         return self.Magic_cookie
 
     def msg_to_bytes(self):
-        MESSAGE = str(hex(self.Magic_cookie)) + str(hex(self.Message_type)) + str(hex((self.Server_port)))
-        return bytes(MESSAGE, 'utf-8')
+        return self.Magic_cookie+self.Message_type+self.Server_port
 
 def bytes_to_msg(bytes):
         msg_type = bytes[:4]

@@ -4,31 +4,24 @@ import os, re
 from config import *
 
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    RED = '\u001b[31m'
-    Magenta = '\u001b[35'
-    Yellow = '\u001b[33'
-
-
 def main():
+    number = 1
     while True:
 
         for ip in ip_range_list:
-            print(bcolors.OKGREEN + f'sending on {ip}')
+            print(f'\u001b[3{number};1m' + f'sending on {ip}' + bcolors.RESET)
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             # sock.bind((ip,0))
-            sock.sendto(Msg(0xfeedbeef, 0x2, port).msg_to_bytes(), (ip, port))
+            frame = bytes([0xfe,0xed,0xbe,0xef])
+            type= bytes([0x02])
+            Msgsend=Msg(frame, type, bytes(port))
+            sock.sendto(Msgsend.msg_to_bytes(), (ip, port))
             sock.close()
+            if number == 7:
+                number = 1
+            else:
+                number += 1
 
         sleep(2)
 
