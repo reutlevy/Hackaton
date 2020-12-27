@@ -3,13 +3,14 @@ import struct
 
 import dataclasses as dataclasses
 
-host = '25.45.173.121'
+host = '10.100.102.6'
 port = 5005
 ip_start = host[:host.rfind('.') + 1]
 
 ip_range_list = ['{}{}'.format(ip_start, x) for x in range(0, 256)]
 
 ip_range_list.append('25.45.173.121')
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -25,9 +26,9 @@ class bcolors:
     Magenta = '\u001b[35'
     Yellow = '\u001b[33'
     purple = '\033[35m'
-    RESET ='\u001b[0m'
-    BackgroundBrightMagenta= '\u001b[45;1m'
-    BackgroundBrightCyan= '\u001b[46;1m'
+    RESET = '\u001b[0m'
+    BackgroundBrightMagenta = '\u001b[45;1m'
+    BackgroundBrightCyan = '\u001b[46;1m'
 
 
 @dataclasses.dataclass
@@ -46,10 +47,17 @@ class Msg:
         return self.Magic_cookie
 
     def msg_to_bytes(self):
-        return self.Magic_cookie+self.Message_type+self.Server_port
+        return self.Magic_cookie + self.Message_type + self.Server_port
+
 
 def bytes_to_msg(bytes):
-        msg_type = bytes[:4]
-        msg_data = bytes[5:7]
-        port = bytes[8::]
-        return msg_type.decode("utf-8"), msg_data.deocde("utf-8"), port.decode("utf-8")
+    msg_type = bytes[:4]
+    msg_data = bytes[4]
+    port = bytes[5:7]
+    return msg_type.decode("utf-8"), msg_data.deocde("utf-8"), port.decode("utf-8")
+
+
+frame = bytes([0xfe, 0xed, 0xbe, 0xef])
+type = bytes([0x02])
+s = struct.pack('>H', port)
+Msgsend = Msg(frame, type, s).msg_to_bytes()
