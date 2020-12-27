@@ -9,6 +9,9 @@ import random
 
 import logging
 
+counter_group1_total = 0
+counter_group2_total = 0
+
 logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-10s) %(message)s',
                     )
@@ -157,6 +160,8 @@ def main():
 
     print(bcolors.BOLD + bcolors.OKGREEN + 'group1: ', couter_group1)
     print(bcolors.BOLD + bcolors.OKGREEN + 'group2: ', couter_group2)
+    print(bcolors.OKCYAN+"total scores of all groups 1 is",counter_group1_total)
+    print(bcolors.OKCYAN+"total scores of all group 2 is" ,counter_group2_total)
 
     print("endddd")
 

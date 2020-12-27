@@ -52,7 +52,7 @@ while True:
 
             maximum = max(a_dict, key=a_dict.get)
             print('\n')
-            print("The most typed char is", maximum)
+            print(bcolors.OKBLUE+bcolors.BOLD+"The most typed char is", maximum)
             print(bcolors.Yellow + 'Received', repr(data))
             print(bcolors.purple + "end")
             s = None
