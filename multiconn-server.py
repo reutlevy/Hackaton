@@ -163,8 +163,8 @@ def main():
             else:
                 service_connection(key, mask)
 
-    print(bcolors.BrightRed+'group1: ',couter_group1)
-    print(bcolors.BrightRed+'group2: ', couter_group2)
+    print(bcolors.purple+'group1: ',couter_group1)
+    print(bcolors.purple+'group2: ', couter_group2)
 
     print("endddd")
 
