@@ -9,22 +9,8 @@ import random
 
 import logging
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    BrightRed= '\u001b[31;1m'
-    BackgroundBrightMagenta= '\u001b[45;1m'
-    BackgroundBrightCyan= '\u001b[46;1m'
-    RESET= '\u001b[0m'
 
-    logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-10s) %(message)s',
                     )
 
@@ -125,6 +111,9 @@ def service_connection(key, mask):
 
 
 def send_udp_invaite():
+    frame = bytes([0xfe, 0xed, 0xbe, 0xef])
+    type = bytes([0x02])
+    Msgsend = Msg(frame, type, bytes(port))
     msg = b'hello hello hello'
     t_end = time.time() + 10
     while time.time() < t_end:

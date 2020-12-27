@@ -26,6 +26,9 @@ class bcolors:
     Yellow = '\u001b[33'
     purple = '\033[35m'
     RESET ='\u001b[0m'
+    BackgroundBrightMagenta= '\u001b[45;1m'
+    BackgroundBrightCyan= '\u001b[46;1m'
+
 
 @dataclasses.dataclass
 class Msg:
