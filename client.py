@@ -6,17 +6,12 @@ from pynput.keyboard import Key, Listener
 s = None
 t_end = time.time()
 
-a_dict = {}
-
 
 def on_press(key):
     # if time.time() > t_end:
     #     return False
     s.sendall(str(key).encode('ascii'))
-    if key in a_dict:
-        a_dict[str(key)] = a_dict[str(key)] + 1
-    else:
-        a_dict[str(key)] = 1
+
 
 print(bcolors.BOLD + bcolors.purple + "Client started, listening for offer requests..." + bcolors.RESET)
 while True:
@@ -36,22 +31,21 @@ while True:
             s.connect((host, port_new))
             s.sendall(b'Rubins\n')
             start_game_msg = s.recv(1024).decode("utf-8")
-            print(bcolors.RED)
+            print(bcolors.Yellow)
             print(start_game_msg)
             t_end = time.time() + 10
             with Listener(
-                    on_press=on_press,timeout=10) as listener:
+                    on_press=on_press, timeout=10) as listener:
                 # listener.start()
                 # time.sleep(10)
                 end_game_msg = s.recv(1024).decode("utf-8")
                 listener.stop()
 
-            print(bcolors.RED)
-            print(end_game_msg)
-            print(bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
+            print(bcolors.white + end_game_msg)
+            print(
+                bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
             s = None
             t_end = time.time()
-
 
             # try:
             #     maximum = max(a_dict, key=a_dict.get)
@@ -62,4 +56,3 @@ while True:
             # print('\n')
             # print(bcolors.OKBLUE+bcolors.BOLD+"The most typed char is", maximum)
             # print(bcolors.Yellow + 'Received', repr(data))
-

@@ -3,7 +3,7 @@ import struct
 
 import dataclasses as dataclasses
 
-host = '10.100.102.6'
+host = '10.0.2.15'
 port = 13117
 ip_start = host[:host.rfind('.') + 1]
 
@@ -29,6 +29,10 @@ class bcolors:
     RESET = '\u001b[0m'
     BackgroundBrightMagenta = '\u001b[45;1m'
     BackgroundBrightCyan = '\u001b[46;1m'
+    pink = '\033[91m'
+    B_White = "\x1b[107m"
+    darkgrey = '\033[90m'
+    white= '\u001b[37m'
 
 
 @dataclasses.dataclass
