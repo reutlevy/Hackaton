@@ -3,7 +3,7 @@ import struct
 
 import dataclasses as dataclasses
 
-host = '10.0.2.15'
+host = '10.100.102.6'
 port = 13117
 ip_start = host[:host.rfind('.') + 1]
 

@@ -181,7 +181,8 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
 
 
     def main():
-        global group1_ips, group2_ips, team_map, couter_group1, couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games
+        global group1_ips, group2_ips, team_map, couter_group1,\
+            couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games
 
         while True:
             total_games+=1
