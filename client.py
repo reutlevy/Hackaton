@@ -1,9 +1,5 @@
-import operator
 import socket
 import time
-
-from pip._vendor.msgpack.fallback import xrange
-
 from config import *
 from pynput.keyboard import Key, Listener
 
@@ -39,19 +35,19 @@ while True:
             port_new = struct.unpack('>H', data[5:7])[0]
             s.connect((host, port_new))
             s.sendall(b'Rubins\n')
-            data = s.recv(1024)
+            start_game_msg = s.recv(1024).decode("utf-8")
             print(bcolors.RED)
-            print(data.decode("utf-8"))
+            print(start_game_msg)
             t_end = time.time() + 10
             with Listener(
                     on_press=on_press,timeout=10) as listener:
                 # listener.start()
                 # time.sleep(10)
-                data = s.recv(1024)
+                end_game_msg = s.recv(1024).decode("utf-8")
                 listener.stop()
 
             print(bcolors.RED)
-            print(data.decode("utf-8"))
+            print(end_game_msg)
             print(bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
             s = None
             t_end = time.time()

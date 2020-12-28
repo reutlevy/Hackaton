@@ -20,8 +20,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
     lsock.setblocking(False)
     sel.register(lsock, selectors.EVENT_READ, data=None)
 
-
-
     def accept_wrapper(sock):
         conn, addr = sock.accept()  # Should be ready to read
         print(bcolors.RED + 'accepted connection from' + bcolors.RESET, addr)
@@ -62,14 +60,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
         data = key.data
         if mask & selectors.EVENT_READ:
             data.outb += """Welcome to Keyboard Spamming Battle Royale.
-                            Group 1:
-                            ==
-                            {}
-                            Group 2:
-                            ==
-                            {}
-                            Start pressing keys on your keyboard as fast as you can!!""".format(group1, group2) \
-                .encode('ascii')
+Group 1:
+==
+{}
+Group 2:
+==
+{}
+Start pressing keys on your keyboard as fast as you can!!""".format(group1, group2).encode('ascii')
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 try:
@@ -187,19 +184,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
                     else:
                         get_char_from_client(key, mask)
             if (couter_group1>couter_group2):
-                winner_group ="Group 1"
+                winner_group ="Group 1 wins!"
                 winner_group_teams =group1
-            else:
-                winner_group = "Group 2"
+            elif (couter_group1<couter_group2):
+                winner_group = "Group 2 wins!"
                 winner_group_teams = group2
+            else:
+                winner_group = "Draw between Group 1 and Group 2"
+                winner_group_teams = group1+group2
             winner_msg = """Game over!
-                            Group 1 typed in {} characters. Group 2 typed in {} characters.
-                            {} wins!
-                            
-                            Congratulations to the winners:
-                            ==
-                            {}""".format(couter_group1,couter_group2,winner_group, winner_group_teams) \
-                    .encode('ascii')
+Group 1 typed in {} characters. Group 2 typed in {} characters.
+{} 
+
+Congratulations to the winners:
+==
+{}""".format(couter_group1,couter_group2,winner_group, winner_group_teams).encode('ascii')
 
             for client in team_map.get('group 1'):
                 send_game_over(client[1], client[2], winner_msg)
@@ -214,7 +213,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
             print(bcolors.OKCYAN+"“Game over, sending out offer requests...")
 
 
-
-
-
-    main()
+    if __name__ == '__main__':
+        main()
