@@ -4,7 +4,7 @@ import struct
 import dataclasses as dataclasses
 
 host = '10.100.102.6'
-port = 5005
+port = 13117
 ip_start = host[:host.rfind('.') + 1]
 
 ip_range_list = ['{}{}'.format(ip_start, x) for x in range(0, 256)]
