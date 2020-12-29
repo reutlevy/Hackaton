@@ -1,0 +1,5 @@
+pip==20.3.3
+dataclasses==0.8
+pynput==1.7.2
+
+

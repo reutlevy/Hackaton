@@ -43,17 +43,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
             if recv_data:
                 if (len(team_map.get('group 1')) < len(team_map.get('group 2'))):
                     team_map['group 1'].append((recv_data, key, mask))
-                    group1_ips.append(data.addr[0])
+                    group1_ips.append(data.addr)
                 elif (len(team_map.get('group 2')) > len(team_map.get('group 1'))):
                     team_map['group 2'].append((recv_data, key, mask))
-                    group2_ips.append(data.addr[0])
+                    group2_ips.append(data.addr)
                 else:
                     group, arr = random.choice(list(team_map.items()))
                     team_map[group].append((recv_data, key, mask))
                     if group == 'group 1':
-                        group1_ips.append(data.addr[0])
+                        group1_ips.append(data.addr)
                     else:
-                        group2_ips.append(data.addr[0])
+                        group2_ips.append(data.addr)
             else:
                 try:
                     sel.unregister(sock)
@@ -108,9 +108,9 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
                     a_dict[recv_data.decode('ascii')] = a_dict[recv_data.decode('ascii')] + 1
                 else:
                     a_dict[recv_data.decode('ascii')] = 1
-                if (data.addr[0] in group1_ips):
+                if (data.addr in group1_ips):
                     couter_group1 = couter_group1 + 1
-                elif (data.addr[0] in group2_ips):
+                elif (data.addr in group2_ips):
                     couter_group2 = couter_group2 + 1
             else:
                 try:
@@ -181,8 +181,7 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
 
 
     def main():
-        global group1_ips, group2_ips, team_map, couter_group1,\
-            couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games
+        global group1_ips, group2_ips, team_map, couter_group1, couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games
 
         while True:
             total_games+=1

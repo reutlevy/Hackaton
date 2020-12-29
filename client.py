@@ -29,7 +29,7 @@ while True:
             s.connect((host, port_new))
             s.sendall(b'Rubins\n')
             start_game_msg = s.recv(1024).decode("utf-8")
-            print(bcolors.Yellow)
+            # print(bcolors.Yellow)
             print(start_game_msg)
             t_end = time.time() + 10
             with Listener(
