@@ -5,7 +5,7 @@ from readchar import readchar
 def getchar():
     print("heloooooo")
     ch = readchar()
-    if ord(ch) == 3 or 4:
+    if ord(ch) == 3 or ord(ch) == 4:
         return False
     print("heloooooo1")
     return ch
