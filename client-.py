@@ -39,23 +39,26 @@ while True:
 
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            port_new = struct.unpack('>H', data[5:7])[0]
-            s.connect((host, port_new))
-            s.sendall(b'Maor Golesh\n')
             try:
-                start_game_msg = s.recv(1024).decode("utf-8")
-            except:
-                continue
-            print(start_game_msg)
-            can_send = True
-            try:
-                end_game_msg = s.recv(1024).decode("utf-8")
-            except:
+                port_new = struct.unpack('>H', data[5:7])[0]
+                s.connect((host, port_new))
+                s.sendall(b'Maor Golesh\n')
+                try:
+                    start_game_msg = s.recv(1024).decode("utf-8")
+                except:
+                    continue
+                print(start_game_msg)
+                can_send = True
+                try:
+                    end_game_msg = s.recv(1024).decode("utf-8")
+                except:
+                    can_send = False
+                    continue
                 can_send = False
-                continue
-            can_send = False
 
-            print(bcolors.white + end_game_msg)
-            print(
-                bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
+                print(bcolors.white + end_game_msg)
+                print(
+                    bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
+            except:
+                pass
             s = None
