@@ -4,8 +4,8 @@ import struct
 import dataclasses as dataclasses
 
 host_ip = '172.1.0.6'
-host_port = 8
-client_port = 8
+host_port = 13118
+client_port = 13118
 
 winner_crown = """
                 *        *        *
