@@ -1,22 +1,35 @@
 import socket
-import time
 from config import *
-from pynput.keyboard import Key, Listener
+from threading import Thread
+import getch
 
 s = None
-t_end = time.time()
+can_send = False
+
+def start_listener():
+    while 1:
+        if can_send:
+            ch = getch.getch()
+            if ord(ch) == 3 or ord(ch) == 4:
+                break
+            if can_send:
+                try:
+                    s.sendall(str(ch).encode('utf-8'))
+                except:
+                    pass
 
 
-def on_press(key):
-    s.sendall(str(key).encode('ascii'))
-
+t1 = Thread(name='listener', target=start_listener)
+t1.setDaemon(True)
+t1.start()
 
 print(bcolors.BOLD + bcolors.purple + "Client started, listening for offer requests..." + bcolors.RESET)
+
 while True:
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
     client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    client.bind(("", port))
+    client.bind(("", client_port))
     data, addr = client.recvfrom(1024)
     if not (data[:4] == bytes([0xfe, 0xed, 0xbe, 0xef])) or not (data[4] == 0x02):
         print("not the correct format")
@@ -24,23 +37,25 @@ while True:
         host = addr[0]
         print(bcolors.OKCYAN + "Received offer from {}, attempting to connect...".format(host))
 
+
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             port_new = struct.unpack('>H', data[5:7])[0]
             s.connect((host, port_new))
-            s.sendall(b'Rubins\n')
-            start_game_msg = s.recv(1024).decode("utf-8")
-            # print(bcolors.Yellow)
+            s.sendall(b'Maor Golesh\n')
+            try:
+                start_game_msg = s.recv(1024).decode("utf-8")
+            except:
+                continue
             print(start_game_msg)
-            t_end = time.time() + 10
-            with Listener(
-                    on_press=on_press, timeout=10) as listener:
-                # listener.start()
-                # time.sleep(10)
+            can_send = True
+            try:
                 end_game_msg = s.recv(1024).decode("utf-8")
-                listener.stop()
+            except:
+                can_send = False
+                continue
+            can_send = False
 
             print(bcolors.white + end_game_msg)
             print(
                 bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
             s = None
-            t_end = time.time()

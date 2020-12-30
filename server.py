@@ -15,12 +15,12 @@ a_dict= {}
 couter_group1_total=0
 couter_group2_total=0
 total_games=0
-
+tie=0
 sel = selectors.DefaultSelector()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
-    lsock.bind((host, port))
+    lsock.bind((host_ip, host_port))
     lsock.listen()
-    print(bcolors.BackgroundBrightMagenta + bcolors.BOLD + 'Server started, listening on IP address ', host,
+    print(bcolors.BackgroundBrightMagenta + bcolors.BOLD + 'Server started, listening on IP address ', host_ip,
           bcolors.RESET)
     lsock.setblocking(False)
     sel.register(lsock, selectors.EVENT_READ, data=None)
@@ -39,9 +39,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
         sock = key.fileobj
         data = key.data
         if mask & selectors.EVENT_READ:
-            recv_data = sock.recv(1024).decode("utf-8")  # Should be ready to read
+            try:
+                recv_data = sock.recv(1024).decode("utf-8")  # Should be ready to read
+            except:
+                sel.unregister(sock)
+                sock.close()
+                print(bcolors.BackgroundBrightMagenta + bcolors.BOLD + 'closing connection to', data.addr)
+                return
             if recv_data:
-                if (len(team_map.get('group 1')) < len(team_map.get('group 2'))):
+                if (len(team_map.get('group 1')) <= len(team_map.get('group 2'))):
                     team_map['group 1'].append((recv_data, key, mask))
                     group1_ips.append(data.addr)
                 elif (len(team_map.get('group 2')) > len(team_map.get('group 1'))):
@@ -67,14 +73,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
         sock = key.fileobj
         data = key.data
         if mask & selectors.EVENT_READ:
-            data.outb += """Welcome to Keyboard Spamming Battle Royale.
+            data.outb += ("""Welcome to Keyboard Spamming Battle Royale.
 Group 1:
 ==
 {}
 Group 2:
 ==
 {}
-Start pressing keys on your keyboard as fast as you can!!""".format(group1, group2).encode('ascii')
+Start pressing keys on your keyboard as fast as you can!!
+ 
+"""+game_on).format(group1, group2).encode('utf-8')
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 try:
@@ -104,10 +112,10 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
         if mask & selectors.EVENT_READ:
             recv_data = sock.recv(1024)  # Should be ready to read
             if recv_data:
-                if recv_data.decode('ascii') in a_dict:
-                    a_dict[recv_data.decode('ascii')] = a_dict[recv_data.decode('ascii')] + 1
+                if recv_data.decode('utf-8') in a_dict:
+                    a_dict[recv_data.decode('utf-8')] = a_dict[recv_data.decode('utf-8')] + 1
                 else:
-                    a_dict[recv_data.decode('ascii')] = 1
+                    a_dict[recv_data.decode('utf-8')] = 1
                 if (data.addr in group1_ips):
                     couter_group1 = couter_group1 + 1
                 elif (data.addr in group2_ips):
@@ -160,28 +168,44 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
         except:
              char_most = 0
         pgroup1=(couter_group1_total/total_games)*100
-        print(bcolors.OKCYAN+"Group 1 has won in ", pgroup1, "percentage og the games")
+        print(bcolors.OKCYAN+"Group 1 has won in ", pgroup1, "percentage of the games")
         pgroup2 = (couter_group2_total / total_games) * 100
-        print(bcolors.OKCYAN+"Group 2 has won in ", pgroup2, "percentage og the games")
+        print(bcolors.OKCYAN+"Group 2 has won in ", pgroup2, "percentage of the games")
+        ptie = (tie / total_games) * 100
+        print(bcolors.pink+"There was a draw in ", ptie, "percentage of the games")
         print(bcolors.purple+"The total games played on this server is", total_games)
 
 
+    # def send_udp_invaite():
+    #     msg = Msgsend
+    #     t_end = time.time() + 10
+    #     while time.time() < t_end:
+    #         for ip in ip_range_list:
+    #             try:
+    #                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
+    #                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    #                 sock.sendto(msg, (ip, port))
+    #                 sock.close()
+    #             except:
+    #                 pass
+
     def send_udp_invaite():
         msg = Msgsend
+        server_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        server_udp.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        server_udp.settimeout(0.2)
         t_end = time.time() + 10
         while time.time() < t_end:
-            for ip in ip_range_list:
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)  # UDP
-                    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-                    sock.sendto(msg, (ip, port))
-                    sock.close()
-                except:
-                    pass
+            try:
+                server_udp.sendto(msg, ('<broadcast>', client_port))
+                time.sleep(1)
+            except:
+                pass
 
 
     def main():
-        global group1_ips, group2_ips, team_map, couter_group1, couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games
+        global group1_ips, group2_ips, team_map, couter_group1, couter_group2, a_dict, couter_group1_total, couter_group2_total, total_games, tie
 
         while True:
             total_games+=1
@@ -226,20 +250,32 @@ Start pressing keys on your keyboard as fast as you can!!""".format(group1, grou
             else:
                 winner_group = "Draw between Group 1 and Group 2"
                 winner_group_teams = group1 + group2
-                couter_group1_total+=1
-                couter_group2_total+=1
-            winner_msg = """Game over!
+                tie+=1
+            end_game_msg = """Game over!
 Group 1 typed in {} characters. Group 2 typed in {} characters.
 {} 
 
 Congratulations to the winners:
 ==
-{}""".format(couter_group1, couter_group2, winner_group, winner_group_teams).encode('ascii')
+{}""".format(couter_group1, couter_group2, winner_group, winner_group_teams)
+
+
 
             for client in team_map.get('group 1'):
-                send_game_over(client[1], client[2], winner_msg)
+                if (couter_group1 > couter_group2):
+                    send_game_over(client[1], client[2], (winner_crown + end_game_msg).encode('utf-8'))
+                elif (couter_group1 < couter_group2):
+                    send_game_over(client[1], client[2], (looser + end_game_msg).encode('utf-8'))
+                else:
+                    send_game_over(client[1], client[2], (drow + end_game_msg).encode('utf-8'))
+
             for client in team_map.get('group 2'):
-                send_game_over(client[1], client[2], winner_msg)
+                if (couter_group1 < couter_group2):
+                    send_game_over(client[1], client[2], (winner_crown + end_game_msg).encode('utf-8'))
+                elif (couter_group1 > couter_group2):
+                    send_game_over(client[1], client[2], (looser + end_game_msg).encode('utf-8'))
+                else:
+                    send_game_over(client[1], client[2], (drow + end_game_msg).encode('utf-8'))
 
             team_map = {'group 1': [], 'group 2': []}
             group1_ips = []
