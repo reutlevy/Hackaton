@@ -60,5 +60,7 @@ while True:
                 print(
                     bcolors.BOLD + bcolors.purple + "Server disconnected, listening for offer requests..." + bcolors.RESET)
             except:
+                print(
+                    bcolors.BOLD + bcolors.purple + "Connection crushed!!! " + bcolors.RESET)
                 pass
             s = None
