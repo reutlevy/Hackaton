@@ -1,11 +1,21 @@
 import codecs
 import struct
+import netifaces as ni
 
 import dataclasses as dataclasses
 
-host_ip = '172.1.0.6'
-host_port = 13118
-client_port = 13118
+try:
+    host_ip = ni.ifaddresses('eth1')[ni.AF_INET][0]['addr']
+except:
+    try:
+        host_ip = ni.ifaddresses('eth2')[ni.AF_INET][0]['addr']
+    except:
+        try:
+            host_ip = ni.ifaddresses('wlp2s0')[ni.AF_INET][0]['addr']
+        except:
+            host_ip ="172.1.0.4"
+host_port = 13117
+client_port = 13117
 
 winner_crown = """
                 *        *        *

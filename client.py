@@ -1,13 +1,18 @@
 import socket
+import time
+
 from config import *
 from threading import Thread
 import getch
 
 s = None
 can_send = False
+t_end = time.time()
+
 
 def start_listener():
-    while 1:
+    global t_end
+    while time.time() < t_end:
         if can_send:
             ch = getch.getch()
             if ord(ch) == 3 or ord(ch) == 4:
@@ -19,9 +24,9 @@ def start_listener():
                     pass
 
 
-t1 = Thread(name='listener', target=start_listener)
-t1.setDaemon(True)
-t1.start()
+# t1 = Thread(name='listener', target=start_listener)
+# t1.setDaemon(True)
+# t1.start()
 
 print(bcolors.BOLD + bcolors.purple + "Client started, listening for offer requests..." + bcolors.RESET)
 
@@ -45,6 +50,10 @@ while True:
                 s.sendall(b'Maor Golesh\n')
                 try:
                     start_game_msg = s.recv(1024).decode("utf-8")
+                    t_end = time.time() + 10
+                    t1 = Thread(target=start_listener)
+                    t1.setDaemon(True)
+                    t1.start()
                 except:
                     continue
                 print(start_game_msg)
@@ -64,3 +73,4 @@ while True:
                     bcolors.BOLD + bcolors.purple + "Connection crushed!!! " + bcolors.RESET)
                 pass
             s = None
+

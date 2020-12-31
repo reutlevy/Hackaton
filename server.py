@@ -18,6 +18,7 @@ total_games=0
 tie=0
 sel = selectors.DefaultSelector()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
+    print(host_ip)
     lsock.bind((host_ip, host_port))
     lsock.listen()
     print(bcolors.BackgroundBrightMagenta + bcolors.BOLD + 'Server started, listening on IP address ', host_ip,
@@ -47,19 +48,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as lsock:
                 print(bcolors.BackgroundBrightMagenta + bcolors.BOLD + 'closing connection to', data.addr)
                 return
             if recv_data:
-                if (len(team_map.get('group 1')) <= len(team_map.get('group 2'))):
+                if (len(team_map.get('group 1')) < len(team_map.get('group 2'))):
                     team_map['group 1'].append((recv_data, key, mask))
                     group1_ips.append(data.addr)
-                elif (len(team_map.get('group 2')) > len(team_map.get('group 1'))):
+                # elif (len(team_map.get('group 2')) > len(team_map.get('group 1'))):
+                else:
                     team_map['group 2'].append((recv_data, key, mask))
                     group2_ips.append(data.addr)
-                else:
-                    group, arr = random.choice(list(team_map.items()))
-                    team_map[group].append((recv_data, key, mask))
-                    if group == 'group 1':
-                        group1_ips.append(data.addr)
-                    else:
-                        group2_ips.append(data.addr)
+                # else:
+                #     group, arr = random.choice(list(team_map.items()))
+                #     team_map[group].append((recv_data, key, mask))
+                #     if group == 'group 1':
+                #         group1_ips.append(data.addr)
+                #     else:
+                #         group2_ips.append(data.addr)
             else:
                 try:
                     sel.unregister(sock)
@@ -110,7 +112,10 @@ Start pressing keys on your keyboard as fast as you can!!
         sock = key.fileobj
         data = key.data
         if mask & selectors.EVENT_READ:
-            recv_data = sock.recv(1024)  # Should be ready to read
+            try:
+                recv_data = sock.recv(1024)  # Should be ready to read
+            except:
+                return
             if recv_data:
                 if recv_data.decode('utf-8') in a_dict:
                     a_dict[recv_data.decode('utf-8')] = a_dict[recv_data.decode('utf-8')] + 1
@@ -124,7 +129,6 @@ Start pressing keys on your keyboard as fast as you can!!
                 try:
                     sel.unregister(sock)
                     sock.close()
-                    print(a_dict)
                     print(bcolors.Yellow + bcolors.BOLD + 'closing connection to', data.addr)
                 except:
                     pass
